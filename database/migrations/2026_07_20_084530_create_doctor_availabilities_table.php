@@ -13,7 +13,14 @@ return new class extends Migration
     {
         Schema::create('doctor_availabilities', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('doctor_id')->constrained()->cascadeOnDelete();
+            $table->unsignedTinyInteger('day_of_week'); // 0 = Sunday, 6 = Saturday (matches Carbon's dayOfWeek)
+            $table->time('start_time'); // 'HH:mm'
+            $table->time('end_time'); // 'HH:mm'
+            $table->unique(['doctor_id', 'day_of_week', 'start_time', 'end_time']);
             $table->timestamps();
+
+            $table->unique(['doctor_id', 'day_of_week']);
         });
     }
 

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['name', 'specialty', 'boi'])]
+#[Fillable(['name', 'specialty', 'bio'])]
 class Doctor extends Model
 {
     public function appointments(): HasMany
