@@ -15,12 +15,11 @@ use Laravel\Ai\Contracts\Conversational;
 use Laravel\Ai\Contracts\HasTools;
 use Laravel\Ai\Contracts\Tool;
 use Laravel\Ai\Enums\Lab;
-use Laravel\Ai\Messages\Message;
 use Laravel\Ai\Promptable;
 use Stringable;
 
 #[Provider(Lab::Gemini)]
-#[Model('gemini-3.5-flash')]
+#[Model('gemini-3.5')]
 class AppointmentAssistant implements Agent, Conversational, HasTools
 {
     use Promptable, RemembersConversations;
@@ -30,7 +29,7 @@ class AppointmentAssistant implements Agent, Conversational, HasTools
      */
     public function instructions(): Stringable|string
     {
-        $today = Carbon::now()->toFormattedDateString();
+        $today = Carbon::now()->format('l, F j, Y');;
 
         return <<<INSTRUCTIONS
             You are the friendly virtual receptionist for the Lumen Health clinic.
@@ -73,15 +72,6 @@ class AppointmentAssistant implements Agent, Conversational, HasTools
         INSTRUCTIONS;
     }
 
-    /**
-     * Get the list of messages comprising the conversation so far.
-     *
-     * @return Message[]
-     */
-    public function messages(): iterable
-    {
-        return [];
-    }
 
     /**
      * Get the tools available to the agent.
