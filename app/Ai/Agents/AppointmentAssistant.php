@@ -19,7 +19,7 @@ use Laravel\Ai\Promptable;
 use Stringable;
 
 #[Provider(Lab::Gemini)]
-#[Model('gemini-3.5')]
+#[Model('gemini-2.5-flash')]
 class AppointmentAssistant implements Agent, Conversational, HasTools
 {
     use Promptable, RemembersConversations;
