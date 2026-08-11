@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type { Doctor} from '@/types/clinic';
+import * as string_decoder from 'node:string_decoder';
 
 interface Props {
     doctors: Doctor[];
@@ -45,4 +46,68 @@ function buildDays(doctor?: Doctor | null): DayRow[] {
 function workingDaysLabel(doctor: Doctor): string {
     const labels = DAYS.filter((day) => doctor.availabilities.some((a) => a.day_of_week === day.value)).map((d) => d.label);
     return labels.length ? labels.join(', ') : '—';
+}
+
+export default function DoctorsIndex({ doctors }: Props) {
+    const [open, setOpen] = useState(false);
+    const [editing, setEditing] = useState<Doctor | null>(null);
+
+    const form = useForm<{ name: string; specialty: string; bio: string; days: DayRow[] }>({
+        name: '',
+        specialty: '',
+        bio: '',
+        days: buildDays(null),
+    });
+
+    function openCreate() {
+        setEditing(null);
+        form.setData({ name: '', specialty: '', bio: '', days: buildDays(null) });
+        form.clearErrors();
+        setOpen(true);
+    }
+
+    function openEdit(doctor: Doctor) {
+        setEditing(doctor);
+        form.setData({
+            name: doctor.name,
+            specialty: doctor.specialty,
+            bio: doctor.bio ?? '',
+            days: buildDays(doctor),
+        });
+        form.clearErrors();
+        setOpen(true);
+    }
+
+    function updateDay(index: number, patch: Partial<DayRow>) {
+        form.setData(
+            'days',
+            form.data.days.map((day, i) => (i === index ? { ...day, ...patch } : day)),
+        );
+    }
+
+    function submit(e: React.FormEvent) {
+        e.preventDefault();
+
+        form.transform((data) => ({
+            name: data.name,
+            specialty: data.specialty,
+            bio: data.bio,
+            availabilities: data.days
+                .filter((day) => day.enabled)
+                .map(({ day_of_week, start_time, end_time }) => ({ day_of_week, start_time, end_time })),
+        }));
+
+        const options = {
+            onSuccess: () => {
+                toast.success(editing ? 'Doctor updated.' : 'Doctor added.');
+                setOpen(false);
+            },
+        };
+
+        if (editing) {
+            form.put(`/admin/doctors/${editing.id}`, options);
+        } else {
+            form.post('/admin/doctors', options);
+        }
+    }
 }
