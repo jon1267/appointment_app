@@ -110,4 +110,34 @@ export default function DoctorsIndex({ doctors }: Props) {
             form.post('/admin/doctors', options);
         }
     }
+
+    function destroy(doctor: Doctor) {
+        if (! confirm(`Delete ${doctor.name}? This also removes teir appointments.`)) return;
+        router.delete(`/admin/doctors/${doctor.id}`, {
+            onSuccess: () => toast.success('Doctor removed')
+        });
+    }
+
+    return (
+        <>
+            <Head title="Manage Doctors" />
+            <div className="p-4">
+                <div className="mb-4 flex items-center justify-between">
+                    <h1 className="text-xl font-semibold">Doctors</h1>
+                    <Button onClick={openCreate}>
+                        <Plus className="mr-2 size-4" /> Add Doctor
+                    </Button>
+                </div>
+
+                <div className="overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
+                    <table className="w-full text-sm">
+                        <thead className=''>
+
+                        </thead>
+                    </table>
+                </div>
+
+            </div>
+        </>
+    );
 }
