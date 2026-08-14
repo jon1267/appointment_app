@@ -131,13 +131,48 @@ export default function DoctorsIndex({ doctors }: Props) {
 
                 <div className="overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                     <table className="w-full text-sm">
-                        <thead className=''>
-
+                        <thead className='bg-muted/50 text-left'>
+                            <tr>
+                                <th className='px-4 py-3'>Name</th>
+                                <th className='px-4 py-3'>Specialty</th>
+                                <th className='px-4 py-3'>Working days</th>
+                                <th className='px-4 py-3'>Actions</th>
+                            </tr>
                         </thead>
+                        <tbody>
+                            { doctors.length === 0 && (
+                                <tr>
+                                    <td colSpan={4} className="px-4 py-8 text-center text-muted-foreground">
+                                        No doctors yet. Add one to get started.
+                                    </td>
+                                </tr>
+                            )}
+
+                            { doctors.map((doctor) => (
+                                <tr key={doctor.id} className="border-t border-sidebar-border/70 dark:border-sidebar-border">
+                                    <td className="px-4 py-3 font-medium">{doctor.name}</td>
+                                    <td className="px-4 py-3 text-muted-foreground">{doctor.specialty}</td>
+                                    <td className="px-4 py-3 text-muted-foreground">{workingDaysLabel(doctor)}</td>
+                                    <td className="px-4 py-3 text-right">
+                                        <Button variant="ghost" size="icon" onClick={() => openEdit(doctor)}>
+                                            <Pencil className="size-4" />
+                                        </Button>
+                                        <Button variant="ghost" size="icon" onClick={() => destroy(doctor)}>
+                                            <Trash2 className="size-4 text-destructive" />
+                                        </Button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
                     </table>
                 </div>
-
             </div>
+
+            <Dialog open={open} onOpenChange={setOpen}>
+                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+                    <DialogTitle>{editing ? 'Edit Doctor' : 'Add Doctor'}</DialogTitle>
+                </DialogContent>
+            </Dialog>
         </>
     );
 }
