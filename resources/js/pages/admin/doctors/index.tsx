@@ -170,9 +170,71 @@ export default function DoctorsIndex({ doctors }: Props) {
 
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
-                    <DialogTitle>{editing ? 'Edit Doctor' : 'Add Doctor'}</DialogTitle>
+                    <DialogHeader>
+                        <DialogTitle>{editing ? 'Edit Doctor' : 'Add Doctor'}</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={submit} className='space-y-4'>
+                        <div className="space-y-1">
+                            <Label htmlFor="name">Name</Label>
+                            <Input id="name" value={form.data.name} onChange={(e) => form.setData('name', e.target.value)} />
+                            {form.errors.name && <p className="text-sm text-destructive">{form.errors.name}</p>}
+                        </div>
+                        <div className="space-y-1">
+                            <Label htmlFor="specialty">Specialty</Label>
+                            <Input id="specialty" value={form.data.specialty} onChange={(e) => form.setData('specialty', e.target.value)} />
+                            {form.errors.specialty && <p className="text-sm text-destructive">{form.errors.specialty}</p>}
+                        </div>
+
+                        <div className="space-y-1">
+                            <Label htmlFor="bio">Bio</Label>
+                            <Input id="bio" value={form.data.bio} onChange={(e) => form.setData('bio', e.target.value)} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Weekly availability</Label>
+                            <div className="space-y-2">
+                                {form.data.days.map((day, index) => (
+                                    <div key={day.day_of_week} className="flex items-center gap-3">
+                                        <label className="flex w-20 items-center gap-2">
+                                            <Checkbox
+                                                checked={day.enabled}
+                                                onCheckedChange={(checked) => updateDay(index, { enabled: Boolean(checked) })}
+                                            />
+                                            <span className="text-sm">{DAYS.find((d) => d.value === day.day_of_week)?.label}</span>
+                                        </label>
+                                        <Input
+                                            type="time"
+                                            value={day.start_time}
+                                            disabled={!day.enabled}
+                                            onChange={(e) => updateDay(index, { start_time: e.target.value })}
+                                            className="w-32"
+                                        />
+                                        <span className="text-muted-foreground">to</span>
+                                        <Input
+                                            type="time"
+                                            value={day.end_time}
+                                            disabled={!day.enabled}
+                                            onChange={(e) => updateDay(index, { end_time: e.target.value })}
+                                            className="w-32"
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="flex justify-end gap-2 pt-2">
+                            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                                Cancel
+                            </Button>
+                            <Button type="submit" disabled={form.processing}>
+                                {editing ? 'Save changes' : 'Add doctor'}
+                            </Button>
+                        </div>
+                    </form>
                 </DialogContent>
             </Dialog>
         </>
     );
 }
+
+DoctorsIndex.layout = {
+    breadcrumbs: [{ title: 'Doctors', href: '/admin/doctors' }],
+};
