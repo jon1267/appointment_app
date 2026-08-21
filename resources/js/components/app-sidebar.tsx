@@ -45,7 +45,7 @@ export function AppSidebar() {
         },
         {
             title: 'My Appointments',
-            href: '/appointment',
+            href: '/appointments',
             icon: CalendarCheck,
         },
         ...(auth.user?.is_admin ? [{ title: 'Manage Doctors', href: '/admin/doctors', icon: UserCog }] : []),

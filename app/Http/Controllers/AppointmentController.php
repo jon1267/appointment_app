@@ -17,7 +17,7 @@ class AppointmentController extends Controller
             ->orderBy('scheduled_at')
             ->get();
 
-        return Inertia::render(appointments/index, [
+        return Inertia::render('appointments/index', [
             'appointments' => $appointments,
         ]);
 
