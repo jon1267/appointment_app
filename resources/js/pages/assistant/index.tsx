@@ -1,7 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { SendHorizonal} from 'lucide-react';
+import { SendHorizonal, Bot, History, Plus, User} from 'lucide-react';
+import type { ConversationMessage, ConversationSummary} from '@/types/clinic';
+
+interface Props {
+    conversations:  ConversationSummary[];
+}
 
 interface ChatMessage {
     id: number;
@@ -54,6 +59,30 @@ export default function Assistant() {
             setMessages((prev) => [...prev, {id: Date.now() + 1, role: 'assistant', content: data.reply }]);
         } catch (error) {
             setMessages((prev) => [...prev, { id: Date.now() + 1, role: 'assistant', content: 'Sorry, something went wrong.' }]);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    function newChat() {
+        setMessages([]);
+        setConversationId(null);
+        setShowHistory(false);
+    }
+
+    async function loadConversation(id: string) {
+        setShowHistory(false);
+        setLoading(true);
+        try {
+            const res = await fetch(`/assistant/conversations/${id}`, {
+                headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            });
+            if (!res.ok) throw new Error('Failed to load');
+            const data: { conversation_id: string; messages: ConversationMessage[] } = await res.json();
+            setMessages(data.messages.map((m, index) => ({ id: index, role: m.role, content: m.content })));
+            setConversationId(data.conversation_id);
+        } catch {
+            // Ignore; keep current chat.
         } finally {
             setLoading(false);
         }

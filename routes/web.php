@@ -14,6 +14,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('assistant/message', [AssistantController::class, 'message'])->name('assistant.message');
 
     Route::get('appointments', [AppointmentController::class, 'index'])->name('appointments.index');
+    Route::get('assistant/conversations/{conversation}', [AssistantController::class, 'show'])->name('assistant.conversation');
 
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
         Route::resource('doctors', DoctorController::class)->only(['index', 'store', 'update', 'destroy']);
