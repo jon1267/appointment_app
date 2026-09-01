@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { SendHorizonal, Bot, History, Plus, User} from 'lucide-react';
+import { SendHorizonal, Bot, History, Plus, User, Stethoscope} from 'lucide-react';
 import type { ConversationMessage, ConversationSummary} from '@/types/clinic';
 
 interface Props {
@@ -19,7 +19,7 @@ function xsrfToken() {
     return match ? decodeURIComponent(match[1]) : '';
 }
 
-export default function Assistant() {
+export default function Assistant({ conversations }: Props) {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
@@ -91,6 +91,27 @@ export default function Assistant() {
     return (
         <div className="mx-auto flex h-full w-full max-w-2xl flex-1 flex-col gap-4 p-4">
             <div className="flex-1 space-y-3 overflow-y-auto">
+
+                <div className='flex items-center gap-3'>
+                    <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                        <Stethoscope className="size-5" />
+                    </div>
+                    <div className="flex-1">
+                        <h1 className="text-lg font-semibold">Appointment Assistant</h1>
+                        <p className="text-sm text-muted-foreground">Describe your symptoms and I'll help you book a doctor.</p>
+                    </div>
+                    <div className="flex gap-2">
+                        <Button variant="outline" size="sm" onClick={newChat}>
+                            <Plus className="mr-1 size-4" /> New
+                        </Button>
+                        {conversations.length > 0 && (
+                            <Button variant="outline" size="sm" onClick={() => setShowHistory((v) => !v)}>
+                                <History className="mr-1 size-4" /> History
+                            </Button>
+                        )}
+                    </div>
+                </div>
+
                 {messages.map((message) => (
                     <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                         <div className={`max-w-[80%] whitespace-pre-wrap rounded-2xl px-4 py-2 text-sm ${
